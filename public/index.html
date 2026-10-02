@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Impulso Social — Seguidores, curtidas e visualizações com entrega automática</title>
+  <meta name="description" content="Compre seguidores, curtidas, comentários e visualizações com pagamento via PIX e entrega automática. Nunca pedimos sua senha.">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%236366f1'/%3E%3Cstop offset='1' stop-color='%23d946ef'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Cpath d='M9 20l5-6 4 4 5-7' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Manrope', system-ui, sans-serif; }
+    .font-display { font-family: 'Cormorant Garamond', Georgia, serif; font-variant-numeric: lining-nums; }
+
+    /* Menu transparente enquanto está sobre o hero escuro (app.js controla o atributo) */
+    #site-header[data-dark] { background-color: rgba(10, 7, 16, .82); border-color: rgba(255, 255, 255, .06); }
+    #site-header[data-over-hero] { background-color: transparent; border-color: transparent; backdrop-filter: none; }
+    #site-header[data-dark] .brand-text { color: #fff; }
+    #site-header[data-dark] .brand-text span { color: #f9a8d4; }
+    #site-header[data-dark] .nav-link { color: rgba(255, 255, 255, .78); }
+    #site-header[data-dark] .nav-link:hover { color: #fff; background-color: rgba(255, 255, 255, .1); }
+    #site-header[data-dark] .nav-cta { background-color: rgba(255, 255, 255, .12); color: #fff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25); }
+    #site-header[data-dark] .nav-cta:hover { background-color: rgba(255, 255, 255, .22); }
+
+    .text-gradient-ig {
+      background: linear-gradient(90deg, #fcd34d, #f472b6, #c084fc, #f472b6, #fcd34d);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: gradient-x 6s linear infinite;
+      text-shadow: none;
+    }
+    #hero .rotator { filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .7)); }
+    .card-dark {
+      background:
+        linear-gradient(#120d19, #120d19) padding-box,
+        linear-gradient(145deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .03) 45%, rgba(255, 255, 255, .08)) border-box;
+      border: 1px solid transparent;
+    }
+    .card-dark::after {
+      content: ''; position: absolute; inset: -1px; z-index: -2; border-radius: inherit; padding: 1px; pointer-events: none;
+      background: linear-gradient(135deg, #f472b6, #a855f7 50%, #fb923c);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      opacity: 0; transition: opacity .35s;
+    }
+    .card-dark:hover::after { opacity: 1; z-index: 1; }
+    .card-dark.spotlight::before { background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgba(236, 72, 153, .16), transparent 60%); }
+    .step-num {
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255, 255, 255, .12);
+      transition: -webkit-text-stroke-color .4s, transform .4s;
+    }
+    .group:hover .step-num { -webkit-text-stroke-color: rgba(244, 114, 182, .55); transform: translateY(-4px); }
+    .step-card { transition: translate .3s ease, box-shadow .3s ease; }
+    .step-card:hover { translate: 0 -6px; box-shadow: 0 25px 50px -12px rgba(80, 7, 60, .6); }
+    .step-runner { animation: step-run 3.2s cubic-bezier(.6, 0, .4, 1) infinite; }
+    @keyframes step-run { 0% { left: 0; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { left: calc(100% - 4rem); opacity: 0; } }
+    .footer-link { position: relative; transition: color .2s; }
+    .footer-link::after {
+      content: ''; position: absolute; left: 0; bottom: -2px; height: 1px; width: 100%;
+      background: linear-gradient(90deg, #f472b6, #fb923c); transform: scaleX(0); transform-origin: left; transition: transform .3s;
+    }
+    .footer-link:hover { color: #fff; }
+    .footer-link:hover::after { transform: scaleX(1); }
+    .footer-giant {
+      font-size: clamp(2.2rem, 8.6vw, 8.5rem);
+      letter-spacing: .03em;
+      color: transparent;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .09), rgba(255, 255, 255, 0) 85%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+    /* Tema escuro das telas de produto e pedido: remapeia as utilidades claras usadas no HTML e no app.js */
+    .theme-dark { background-color: #0a0710; color: rgba(255, 255, 255, .62); }
+    .theme-dark .bg-white { background-color: #120d19; }
+    .theme-dark .bg-white\/95 { background-color: rgba(10, 7, 16, .92); }
+    .theme-dark .bg-slate-50, .theme-dark .bg-slate-50\/50, .theme-dark .bg-slate-50\/70 { background-color: rgba(255, 255, 255, .04); }
+    .theme-dark .bg-slate-100 { background-color: rgba(255, 255, 255, .07); }
+    .theme-dark .bg-slate-200 { background-color: rgba(255, 255, 255, .1); }
+    .theme-dark .bg-emerald-400 { background-color: #34d399; }
+    .theme-dark .bg-slate-900 { background-color: rgba(255, 255, 255, .1); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .15); }
+    .theme-dark .hover\:bg-slate-700:hover, .theme-dark .hover\:bg-slate-50:hover { background-color: rgba(255, 255, 255, .16); }
+    .theme-dark .border-slate-100, .theme-dark .border-slate-200 { border-color: rgba(255, 255, 255, .08); }
+    .theme-dark .ring-slate-100, .theme-dark .ring-slate-200 { --tw-ring-color: rgba(255, 255, 255, .12); }
+    .theme-dark .text-slate-900, .theme-dark .text-slate-800 { color: #fff; }
+    .theme-dark .text-slate-700 { color: rgba(255, 255, 255, .85); }
+    .theme-dark .text-slate-600 { color: rgba(255, 255, 255, .7); }
+    .theme-dark .text-slate-500 { color: rgba(255, 255, 255, .58); }
+    .theme-dark .text-slate-400 { color: rgba(255, 255, 255, .42); }
+    .theme-dark .text-slate-300 { color: rgba(255, 255, 255, .25); }
+    .theme-dark .text-indigo-600, .theme-dark .text-indigo-700 { color: #f9a8d4; }
+    .theme-dark .hover\:text-indigo-600:hover { color: #f9a8d4; }
+    .theme-dark .bg-indigo-50 { background-color: rgba(236, 72, 153, .14); }
+    .theme-dark .bg-indigo-600 { background-image: linear-gradient(90deg, #c026d3, #ec4899, #fb923c); }
+    .theme-dark .hover\:bg-indigo-700:hover { filter: brightness(1.1); }
+    .theme-dark .border-emerald-100 { border-color: rgba(16, 185, 129, .25); }
+    .theme-dark .bg-emerald-50 { background-color: rgba(16, 185, 129, .13); }
+    .theme-dark .ring-emerald-50\/50 { --tw-ring-color: rgba(16, 185, 129, .08); }
+    .theme-dark .text-emerald-600, .theme-dark .text-emerald-700 { color: #6ee7b7; }
+    .theme-dark .bg-amber-50 { background-color: rgba(245, 158, 11, .1); }
+    .theme-dark .border-amber-200\/70 { border-color: rgba(245, 158, 11, .25); }
+    .theme-dark .text-amber-900 { color: #fde68a; }
+    .theme-dark .text-amber-700 { color: #fcd34d; }
+    .theme-dark .bg-red-50 { background-color: rgba(239, 68, 68, .12); }
+    .theme-dark .text-red-600, .theme-dark .text-red-500 { color: #fca5a5; }
+    .theme-dark input { color: #fff; }
+    .theme-dark .placeholder\:text-slate-400::placeholder { color: rgba(255, 255, 255, .3); }
+    .theme-dark .focus\:bg-white:focus { background-color: rgba(255, 255, 255, .06); }
+    .theme-dark .focus\:border-indigo-400:focus { border-color: #f472b6; }
+    .theme-dark .focus\:ring-indigo-100:focus { --tw-ring-color: rgba(236, 72, 153, .2); }
+    .theme-dark .skeleton { background: linear-gradient(90deg, rgba(255, 255, 255, .03) 25%, rgba(255, 255, 255, .08) 37%, rgba(255, 255, 255, .03) 63%); background-size: 400% 100%; }
+    .theme-dark section.rounded-3xl, .theme-dark .panel {
+      background:
+        linear-gradient(#120d19, #120d19) padding-box,
+        linear-gradient(145deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .03) 45%, rgba(255, 255, 255, .08)) border-box;
+      border: 1px solid transparent;
+      box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .6);
+    }
+    .variant-selected {
+      background:
+        linear-gradient(#1c1124, #1c1124) padding-box,
+        linear-gradient(135deg, #f472b6, #a855f7 50%, #fb923c) border-box;
+      border: 2px solid transparent;
+      box-shadow: 0 12px 40px -12px rgba(236, 72, 153, .55);
+    }
+    .skeleton-dark {
+      background: linear-gradient(90deg, rgba(255, 255, 255, .03) 25%, rgba(255, 255, 255, .08) 37%, rgba(255, 255, 255, .03) 63%);
+      background-size: 400% 100%;
+      animation: shimmer 1.4s ease infinite;
+    }
+    .hero-vignette { background: radial-gradient(ellipse at center, transparent 35%, rgba(0, 0, 0, .75) 100%); }
+    .hero-scrim { background: radial-gradient(ellipse 48% 42% at 50% 50%, rgba(7, 5, 9, .78), rgba(7, 5, 9, .45) 55%, transparent 100%); }
+    .hero-text-shadow { text-shadow: 0 2px 4px rgba(0, 0, 0, .55), 0 8px 40px rgba(0, 0, 0, .6); }
+    .hero-grain { opacity: .07; mix-blend-mode: overlay; animation: grain .9s steps(6) infinite; }
+    @keyframes grain {
+      0% { background-position: 0 0; } 20% { background-position: -40px 30px; } 40% { background-position: 60px -20px; }
+      60% { background-position: -20px -60px; } 80% { background-position: 30px 50px; } 100% { background-position: 0 0; }
+    }
+    .scroll-dot { animation: scroll-dot 1.8s ease-in-out infinite; }
+    @keyframes scroll-dot { 0% { transform: translateY(0); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(14px); opacity: 0; } }
+    .hero-in { animation: hero-in 1.4s cubic-bezier(.2, .7, .2, 1) both; }
+    @keyframes hero-in { from { opacity: 0; letter-spacing: .4em; filter: blur(10px); } to { opacity: 1; filter: none; } }
+    .hl {
+      background-image: linear-gradient(90deg, #f59e0b, #ec4899, #e11d48);
+      background-size: 100% 2px;
+      background-position: 0 100%;
+      background-repeat: no-repeat;
+      padding-bottom: 1px;
+    }
+    .text-gradient {
+      background: linear-gradient(90deg, #4f46e5, #c026d3, #f97316, #c026d3, #4f46e5);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: gradient-x 6s linear infinite;
+    }
+    @keyframes gradient-x { to { background-position: 200% center; } }
+
+    /* Revelação ao rolar: app.js adiciona .in quando o elemento entra na tela */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px) scale(.98);
+      transition:
+        opacity .7s cubic-bezier(.2, .7, .2, 1) var(--d, 0ms),
+        transform .7s cubic-bezier(.2, .7, .2, 1) var(--d, 0ms),
+        translate .3s ease, box-shadow .3s ease, border-color .3s ease;
+    }
+    .reveal.in { opacity: 1; transform: none; }
+    .draw-line { transform: scaleX(0); transform-origin: left; transition: transform 1.4s cubic-bezier(.2, .7, .2, 1) .3s; }
+    .in .draw-line { transform: scaleX(1); }
+    .pop { transform: scale(.4); opacity: 0; transition: transform .6s cubic-bezier(.34, 1.56, .64, 1), opacity .4s; transition-delay: calc(var(--d, 0ms) + 150ms); }
+    .in .pop, .in.pop { transform: none; opacity: 1; }
+
+    .rotator { display: inline-block; perspective: 600px; }
+    .word-in { display: inline-block; animation: word-in .55s cubic-bezier(.2, .7, .2, 1) both; }
+    .word-out { display: inline-block; animation: word-out .3s ease-in both; }
+    @keyframes word-in { from { opacity: 0; transform: translateY(55%) rotateX(-70deg); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+    @keyframes word-out { to { opacity: 0; transform: translateY(-55%) rotateX(70deg); filter: blur(6px); } }
+
+    .btn-shine { position: relative; overflow: hidden; isolation: isolate; }
+    .btn-shine::after {
+      content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+      background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, .45) 50%, transparent 70%);
+      transform: translateX(-120%);
+      animation: shine 3.5s ease-in-out infinite;
+    }
+    @keyframes shine { 0%, 55% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+
+    .marquee-mask { mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+    .marquee-track { animation: marquee 32s linear infinite; }
+    .marquee:hover .marquee-track { animation-play-state: paused; }
+    @keyframes marquee { to { transform: translateX(-50%); } }
+
+    .spotlight { isolation: isolate; }
+    .spotlight::before {
+      content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+      background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgba(192, 38, 211, .12), transparent 60%);
+      opacity: 0; transition: opacity .3s;
+    }
+    .spotlight:hover::before { opacity: 1; }
+    .group:hover .wiggle { animation: wiggle .6s ease; }
+    @keyframes wiggle { 0%, 100% { transform: none; } 30% { transform: rotate(-10deg) scale(1.1); } 65% { transform: rotate(8deg) scale(1.1); } }
+
+    .bg-animated { background-size: 200% 200%; animation: gradient-xy 9s ease infinite; }
+    @keyframes gradient-xy { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+    .bubble { position: absolute; bottom: -24px; color: rgba(255, 255, 255, .7); animation: rise linear infinite; }
+    @keyframes rise { 0% { transform: translateY(0) scale(.7); opacity: 0; } 15% { opacity: .9; } 100% { transform: translateY(-460px) scale(1.15) rotate(18deg); opacity: 0; } }
+    .orbit { animation: orbit 14s linear infinite; }
+    @keyframes orbit { to { transform: rotate(360deg); } }
+    .skeleton {
+      background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 37%, #f1f5f9 63%);
+      background-size: 400% 100%;
+      animation: shimmer 1.4s ease infinite;
+    }
+    .fade-up { animation: fade-up .45s cubic-bezier(.2, .7, .2, 1) both; }
+    .float-slow { animation: float 6s ease-in-out infinite; }
+    @keyframes shimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+    @keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @keyframes grow { from { width: 12%; } to { width: 78%; } }
+    .grow-bar { animation: grow 3.5s ease-in-out infinite alternate; }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .faq-chevron { transform: rotate(180deg); }
+    .faq-item { interpolate-size: allow-keywords; }
+    .faq-item::details-content { height: 0; overflow: clip; transition: height .4s cubic-bezier(.2, .7, .2, 1), content-visibility .4s allow-discrete; }
+    .faq-item[open]::details-content { height: auto; }
+    .faq-plus { transition: transform .4s cubic-bezier(.34, 1.56, .64, 1); }
+    .faq-item[open] .faq-plus { transform: rotate(135deg); }
+    .faq-num { color: transparent; -webkit-text-stroke: 1px rgba(255, 255, 255, .25); transition: color .3s, -webkit-text-stroke-color .3s; }
+    .faq-item[open] .faq-num, .faq-item:hover .faq-num { -webkit-text-stroke-color: transparent; color: #f472b6; }
+    #profile-modal[data-open] .modal-backdrop { animation: modal-fade .25s ease both; }
+    #profile-modal[data-open] .modal-card { animation: modal-pop .4s cubic-bezier(.2, .9, .3, 1.15) both; }
+    @keyframes modal-fade { from { opacity: 0; } }
+    @keyframes modal-pop { from { opacity: 0; transform: translateY(16px) scale(.94); } }
+    .avatar-ring { background: conic-gradient(from 210deg, #f59e0b, #ec4899, #a855f7, #6366f1, #f59e0b); }
+    .avatar-ring.is-private { background: rgba(255, 255, 255, .14); }
+    .modal-spin { animation: modal-spin .9s linear infinite; }
+    @keyframes modal-spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+      .reveal, .pop { opacity: 1 !important; transform: none !important; }
+      .draw-line { transform: none !important; }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="/app.js" defer></script>
+  <script src="/hero-bg.js" defer></script>
+  <script type="module" src="/hero-3d.js"></script>
+</head>
+<body class="min-h-screen bg-[#0a0710] text-slate-600 antialiased">
+
+  <!-- ============ HEADER ============ -->
+  <header id="site-header" class="sticky top-0 z-30 border-b border-slate-100 bg-white/80 backdrop-blur-lg transition-colors duration-300">
+    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
+      <a href="#/" class="flex items-center" aria-label="Impulso Social — início">
+        <span class="brand-text text-lg font-extrabold tracking-tight text-slate-900 transition-colors">Impulso<span class="text-indigo-600">Social</span></span>
+      </a>
+      <nav class="flex items-center gap-1 text-sm font-semibold">
+        <button type="button" data-goto="servicos" class="nav-link hidden rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 sm:block">Serviços</button>
+        <button type="button" data-goto="como-funciona" class="nav-link hidden rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 md:block">Como funciona</button>
+        <button type="button" data-goto="faq" class="nav-link hidden rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 md:block">Dúvidas</button>
+        <a href="#/pedido" class="nav-cta ml-1 inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-2 text-white transition hover:bg-slate-700">
+          <span data-icon="search" class="h-4 w-4"></span>
+          <span class="hidden sm:inline">Acompanhar pedido</span>
+          <span class="sm:hidden">Meu pedido</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ============ HOME ============ -->
+  <main id="view-home" class="hidden">
+    <!-- Hero -->
+    <section id="hero" class="relative -mt-16 flex min-h-[100svh] items-center justify-center overflow-hidden bg-[#070509] text-center text-white">
+      <canvas id="hero-canvas" aria-hidden="true" class="absolute inset-0 h-full w-full transition-opacity duration-1000"></canvas>
+      <canvas id="hero-3d" aria-hidden="true" class="absolute inset-0 h-full w-full opacity-0 transition-opacity duration-1000"></canvas>
+      <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-b from-black/45 via-black/15 to-black/80"></div>
+      <div aria-hidden="true" class="hero-vignette absolute inset-0"></div>
+      <div aria-hidden="true" class="hero-scrim absolute inset-0"></div>
+      <div id="hero-grain" aria-hidden="true" class="hero-grain pointer-events-none absolute -inset-20"></div>
+
+      <div class="hero-text-shadow relative z-10 mx-auto max-w-4xl px-6 pt-28 pb-32">
+        <p class="fade-up text-[10px] font-bold uppercase tracking-[0.25em] text-white/90 sm:text-xs sm:tracking-[0.35em]">Crescimento para Instagram&nbsp;&amp;&nbsp;TikTok</p>
+        <h1 class="hero-in font-display mt-6 text-[2.9rem] leading-none font-medium uppercase tracking-[0.14em] sm:text-7xl lg:text-8xl" style="animation-delay: 150ms">
+          Impulso Social
+        </h1>
+        <div class="fade-up mx-auto mt-8 h-px w-24 bg-gradient-to-r from-transparent via-pink-400 to-transparent" style="animation-delay: 500ms"></div>
+        <p class="fade-up font-display mt-7 text-2xl text-white italic sm:text-3xl" style="animation-delay: 650ms">
+          Mais <span class="rotator"><span id="hero-word" class="text-gradient-ig -mr-[0.15em] pr-[0.15em]">seguidores</span></span> em cada publicação.
+        </p>
+        <p class="fade-up mx-auto mt-4 max-w-lg text-[15px] font-medium leading-relaxed text-white/85" style="animation-delay: 750ms">
+          Pagamento via PIX e entrega automática. Nunca pedimos sua senha.
+        </p>
+        <div class="fade-up mx-auto mt-10 flex w-full max-w-xl items-stretch justify-center gap-2.5 px-2 sm:gap-3" style="animation-delay: 850ms">
+          <button type="button" data-goto="servicos" data-network="instagram" class="btn-shine inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-md bg-gradient-to-r from-fuchsia-600 via-pink-500 to-orange-400 px-2 py-3.5 text-[10px] font-extrabold uppercase tracking-[0.06em] sm:max-w-64 sm:gap-2.5 sm:px-6 sm:text-xs sm:tracking-[0.2em] text-white shadow-lg shadow-fuchsia-900/40 transition hover:brightness-110">
+            <span data-icon="instagram" class="h-4 w-4"></span>
+            Comprar Instagram
+          </button>
+          <button type="button" data-goto="servicos" data-network="tiktok" class="btn-shine inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-white/40 bg-black/35 px-2 py-3.5 text-[10px] font-extrabold uppercase tracking-[0.06em] sm:max-w-64 sm:gap-2.5 sm:px-6 sm:text-xs sm:tracking-[0.2em] text-white backdrop-blur-sm transition hover:bg-white/15">
+            <span data-icon="tiktok" class="h-4 w-4"></span>
+            Comprar TikTok
+          </button>
+        </div>
+      </div>
+
+      <button type="button" data-goto="servicos" aria-label="Rolar para os serviços" class="fade-up absolute bottom-8 left-1/2 z-10 -translate-x-1/2" style="animation-delay: 1200ms">
+        <span class="flex h-10 w-6 justify-center rounded-full border-2 border-white/40 pt-2">
+          <span class="scroll-dot h-1.5 w-1.5 rounded-full bg-white"></span>
+        </span>
+      </button>
+    </section>
+
+    <!-- Faixa animada -->
+    <section aria-label="Serviços disponíveis" class="marquee overflow-hidden border-y border-white/5 bg-[#0a0710] py-4">
+      <div class="marquee-mask">
+      <div class="marquee-track flex w-max gap-3">
+        <ul class="flex shrink-0 gap-3 text-sm font-bold text-white/75">
+          <li class="flex items-center gap-2 rounded-full bg-white/[0.04] px-4 py-2 ring-1 ring-white/10"><span data-icon="seguidores" class="h-4 w-4 text-indigo-500"></span>Seguidores</li>
+          <li class="flex items-center gap-2 rounded-full bg-white/[0.04] px-4 py-2 ring-1 ring-white/10"><span data-icon="curtidas" class="h-4 w-4 text-pink-500"></span>Curtidas</li>
+          <li class="flex items-center gap-2 rounded-full bg-white/[0.04] px-4 py-2 ring-1 ring-white/10"><span data-icon="visualizacoes" class="h-4 w-4 text-orange-500"></span>Views no Reels</li>
+          <li class="flex items-center gap-2 rounded-full bg-white/[0.04] px-4 py-2 ring-1 ring-white/10"><span data-icon="stories" class="h-4 w-4 text-fuchsia-500"></span>Views nos Stories</li>
+          <li class="flex items-center gap-2 rounded-full bg-white/[0.04] px-4 py-2 ring-1 ring-white/10"><span data-icon="comentarios" class="h-4 w-4 text-violet-500"></span>Comentários</li>
+          <li class="flex items-center gap-2 rounded-full bg-white/[0.04] px-4 py-2 ring-1 ring-white/10"><span data-icon="compartilhamentos" class="h-4 w-4 text-sky-500"></span>Compartilhamentos</li>
+          <li class="flex items-center gap-2 rounded-full bg-white/[0.04] px-4 py-2 ring-1 ring-white/10"><span data-icon="reposts" class="h-4 w-4 text-emerald-500"></span>Reposts</li>
+          <li class="flex items-center gap-2 rounded-full bg-white/[0.04] px-4 py-2 ring-1 ring-white/10"><span data-icon="pacote_mensal" class="h-4 w-4 text-amber-500"></span>Pacotes mensais</li>
+          <li class="flex items-center gap-2 rounded-full bg-white/[0.04] px-4 py-2 ring-1 ring-white/10"><span data-icon="tiktok" class="h-4 w-4 text-white"></span>TikTok</li>
+          <li class="flex items-center gap-2 rounded-full bg-white/[0.04] px-4 py-2 ring-1 ring-white/10"><span data-icon="qr" class="h-4 w-4 text-teal-500"></span>Pagamento via PIX</li>
+        </ul>
+      </div>
+      </div>
+    </section>
+
+    <!-- Como funciona -->
+    <section id="como-funciona" class="relative scroll-mt-20 overflow-hidden bg-[#0a0710] py-24 text-white">
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+        <div class="absolute top-1/3 left-1/2 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-violet-700/15 blur-[120px]"></div>
+      </div>
+      <div class="relative mx-auto max-w-6xl px-4">
+        <div class="reveal mx-auto max-w-2xl text-center">
+          <p class="text-[11px] font-bold uppercase tracking-[0.35em] text-pink-300/90">Como funciona</p>
+          <h2 class="font-display mt-4 text-4xl font-medium tracking-tight sm:text-6xl">
+            Três passos, <em class="text-gradient-ig -mr-[0.1em] pr-[0.1em]">menos de 2 minutos</em>
+          </h2>
+          <div class="mx-auto mt-6 h-px w-24 bg-gradient-to-r from-transparent via-pink-400 to-transparent"></div>
+        </div>
+
+        <div class="reveal relative mt-16">
+          <div aria-hidden="true" class="draw-line absolute top-[3.25rem] right-[16%] left-[16%] hidden h-px bg-gradient-to-r from-violet-500/60 via-pink-500/60 to-orange-400/60 md:block">
+            <span class="step-runner absolute -top-[3px] left-0 h-[7px] w-16 rounded-full bg-gradient-to-r from-transparent via-white to-transparent blur-[1px]"></span>
+          </div>
+          <ol class="relative grid gap-5 md:grid-cols-3">
+            <li class="step-card card-dark group relative rounded-3xl px-7 pt-8 pb-8 text-center" style="--d: 0ms">
+              <span aria-hidden="true" class="step-num font-display pointer-events-none absolute top-2 right-5 text-7xl font-semibold">01</span>
+              <span class="pop relative mx-auto grid h-[4.5rem] w-[4.5rem] place-items-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-lg shadow-violet-900/50 ring-8 ring-[#0a0710]">
+                <span data-icon="sparkles" class="h-8 w-8"></span>
+              </span>
+              <h3 class="mt-6 text-xl font-extrabold tracking-tight">Escolha o pacote</h3>
+              <p class="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-white/55">Selecione o serviço e a quantidade ideal para o seu perfil ou postagem.</p>
+            </li>
+            <li class="step-card card-dark group relative rounded-3xl px-7 pt-8 pb-8 text-center" style="--d: 350ms">
+              <span aria-hidden="true" class="step-num font-display pointer-events-none absolute top-2 right-5 text-7xl font-semibold">02</span>
+              <span class="pop relative mx-auto grid h-[4.5rem] w-[4.5rem] place-items-center rounded-full bg-gradient-to-br from-fuchsia-500 to-pink-500 text-white shadow-lg shadow-fuchsia-900/50 ring-8 ring-[#0a0710]">
+                <span data-icon="link" class="h-8 w-8"></span>
+              </span>
+              <h3 class="mt-6 text-xl font-extrabold tracking-tight">Informe o link</h3>
+              <p class="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-white/55">Só o @ ou o link da publicação, mais WhatsApp e e-mail. <strong class="font-semibold text-white/85">Nunca a senha.</strong></p>
+            </li>
+            <li class="step-card card-dark group relative rounded-3xl px-7 pt-8 pb-8 text-center" style="--d: 700ms">
+              <span aria-hidden="true" class="step-num font-display pointer-events-none absolute top-2 right-5 text-7xl font-semibold">03</span>
+              <span class="pop relative mx-auto grid h-[4.5rem] w-[4.5rem] place-items-center rounded-full bg-gradient-to-br from-pink-500 to-orange-400 text-white shadow-lg shadow-orange-900/40 ring-8 ring-[#0a0710]">
+                <span data-icon="qr" class="h-8 w-8"></span>
+              </span>
+              <h3 class="mt-6 text-xl font-extrabold tracking-tight">Pague com PIX</h3>
+              <p class="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-white/55">Aprovou, enviou: a entrega começa automaticamente em instantes.</p>
+            </li>
+          </ol>
+        </div>
+
+        <!-- Números -->
+        <div class="reveal mt-20">
+          <dl class="card-dark relative grid grid-cols-2 overflow-hidden rounded-[2rem] lg:grid-cols-4">
+            <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-pink-400/70 to-transparent"></div>
+            <div class="border-white/[0.07] p-7 text-center sm:p-9">
+              <dd class="font-display text-6xl font-semibold leading-none tracking-tight sm:text-7xl"><span data-count="24">0</span><span class="text-gradient-ig">h</span></dd>
+              <dt class="mt-3 text-xs font-bold uppercase tracking-[0.2em] text-white/50">entrega automática</dt>
+            </div>
+            <div class="border-l border-white/[0.07] p-7 text-center sm:p-9">
+              <dd class="font-display text-6xl font-semibold leading-none tracking-tight sm:text-7xl"><span data-count="2">0</span><span class="text-gradient-ig text-4xl sm:text-5xl"> min</span></dd>
+              <dt class="mt-3 text-xs font-bold uppercase tracking-[0.2em] text-white/50">para fazer o pedido</dt>
+            </div>
+            <div class="border-t border-white/[0.07] p-7 text-center sm:p-9 lg:border-t-0 lg:border-l">
+              <dd class="font-display text-6xl font-semibold leading-none tracking-tight sm:text-7xl"><span data-count="100">0</span><span class="text-gradient-ig">%</span></dd>
+              <dt class="mt-3 text-xs font-bold uppercase tracking-[0.2em] text-white/50">pagamento via PIX</dt>
+            </div>
+            <div class="border-t border-l border-white/[0.07] p-7 text-center sm:p-9 lg:border-t-0">
+              <dd class="font-display text-6xl font-semibold leading-none tracking-tight sm:text-7xl"><span data-count="0" data-count-from="10">10</span></dd>
+              <dt class="mt-3 text-xs font-bold uppercase tracking-[0.2em] text-white/50">senhas pedidas</dt>
+            </div>
+          </dl>
+        </div>
+
+        <!-- Garantias -->
+        <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" id="benefits"></div>
+      </div>
+    </section>
+
+    <!-- Serviços -->
+    <section id="servicos" class="relative scroll-mt-20 overflow-hidden bg-[#0a0710] pt-20 pb-24 text-white">
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+        <div class="absolute -top-40 left-1/2 h-[480px] w-[900px] -translate-x-1/2 rounded-full bg-fuchsia-700/20 blur-[120px]"></div>
+        <div class="absolute right-0 bottom-0 h-80 w-80 rounded-full bg-orange-500/10 blur-[100px]"></div>
+        <div class="absolute bottom-20 left-0 h-72 w-72 rounded-full bg-violet-600/15 blur-[100px]"></div>
+      </div>
+      <div class="relative mx-auto max-w-6xl px-4">
+        <div class="reveal text-center">
+          <p class="text-[11px] font-bold uppercase tracking-[0.35em] text-pink-300/90">Serviços</p>
+          <h2 class="font-display mt-4 text-4xl font-medium tracking-tight sm:text-6xl">
+            Escolha o que seu <em class="text-gradient-ig -mr-[0.1em] pr-[0.1em]">perfil</em> precisa
+          </h2>
+          <div class="mx-auto mt-6 h-px w-24 bg-gradient-to-r from-transparent via-pink-400 to-transparent"></div>
+          <p class="mx-auto mt-6 max-w-md text-white/60">Todos os pacotes com entrega automática logo após a confirmação do PIX.</p>
+          <div id="network-filter" role="tablist" aria-label="Filtrar por rede social" class="relative mt-10 inline-flex rounded-full bg-white/[0.04] p-1.5 ring-1 ring-white/10 backdrop-blur"></div>
+        </div>
+        <div id="products-grid" class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"></div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="relative scroll-mt-20 overflow-hidden border-t border-white/[0.05] bg-[#0a0710] py-24 text-white">
+      <div aria-hidden="true" class="pointer-events-none absolute -left-40 top-1/4 h-96 w-96 rounded-full bg-fuchsia-700/15 blur-[120px]"></div>
+      <div class="relative mx-auto grid max-w-6xl gap-12 px-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.3fr)] lg:gap-16">
+        <div class="reveal lg:sticky lg:top-28 lg:self-start">
+          <p class="text-[11px] font-bold uppercase tracking-[0.35em] text-pink-300/90">Dúvidas frequentes</p>
+          <h2 class="font-display mt-4 text-4xl leading-[1.05] font-medium tracking-tight sm:text-6xl">
+            Ficou com alguma <em class="text-gradient-ig -mr-[0.1em] pr-[0.1em]">dúvida?</em>
+          </h2>
+          <div class="mt-6 h-px w-24 bg-gradient-to-r from-pink-400 to-transparent"></div>
+          <p class="mt-6 max-w-sm leading-relaxed text-white/60">Reunimos as perguntas mais comuns de quem compra com a gente. Não encontrou a sua? Acompanhe seu pedido ou fale com o suporte pelo WhatsApp informado na compra.</p>
+
+          <div class="card-dark relative mt-8 max-w-sm rounded-3xl p-6">
+            <div class="flex items-center gap-3">
+              <span class="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-fuchsia-600 to-orange-400 text-white shadow-lg shadow-fuchsia-900/40"><span data-icon="lock" class="h-5 w-5"></span></span>
+              <div>
+                <p class="font-extrabold">Nunca pedimos sua senha</p>
+                <p class="text-xs text-white/50">Só o @ ou o link da publicação.</p>
+              </div>
+            </div>
+            <div class="mt-5 grid grid-cols-2 gap-2">
+              <a href="#/pedido" class="rounded-xl bg-white/[0.07] px-3 py-2.5 text-center text-sm font-bold ring-1 ring-white/10 transition hover:bg-white/15">Meu pedido</a>
+              <button type="button" data-goto="servicos" class="rounded-xl bg-gradient-to-r from-fuchsia-600 to-orange-400 px-3 py-2.5 text-sm font-bold transition hover:brightness-110">Ver serviços</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="faq-list" class="space-y-3"></div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="bg-[#0a0710] pt-4 pb-24">
+      <div class="mx-auto max-w-6xl px-4">
+        <div class="reveal bg-animated relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-indigo-600 via-fuchsia-600 to-orange-500 px-8 py-16 text-center shadow-2xl shadow-fuchsia-950/60">
+          <div aria-hidden="true" class="orbit absolute -top-32 -right-32 h-80 w-80 rounded-full border-[18px] border-dashed border-white/10"></div>
+          <div aria-hidden="true" class="absolute -bottom-24 -left-10 h-64 w-64 rounded-full bg-orange-300/20 blur-2xl"></div>
+          <div id="cta-bubbles" aria-hidden="true" class="pointer-events-none absolute inset-0"></div>
+          <h2 class="relative text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Pronto para crescer?</h2>
+          <p class="relative mx-auto mt-3 max-w-xl text-indigo-100">Escolha um pacote agora e veja a entrega começar em minutos.</p>
+          <button type="button" data-goto="servicos" class="btn-shine relative mt-8 inline-flex items-center gap-2 rounded-2xl bg-white px-7 py-3.5 font-bold text-fuchsia-700 shadow-lg transition hover:-translate-y-0.5 hover:scale-105">
+            Escolher pacote <span data-icon="arrow" class="h-5 w-5"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ PRODUTO ============ -->
+  <main id="view-product" class="theme-dark relative hidden overflow-hidden pb-28 lg:pb-16">
+    <div aria-hidden="true" class="pointer-events-none absolute -top-48 left-1/2 h-[520px] w-[1000px] -translate-x-1/2 rounded-full bg-fuchsia-700/20 blur-[130px]"></div>
+    <nav aria-label="Navegação estrutural" class="relative border-b border-white/[0.06]">
+      <ol id="breadcrumb" class="mx-auto flex max-w-6xl flex-wrap items-center gap-2 px-4 py-3 text-sm text-slate-400"></ol>
+    </nav>
+
+    <div class="relative mx-auto grid max-w-6xl gap-6 px-4 pt-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div class="space-y-6">
+        <!-- Cabeçalho do produto -->
+        <section class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm sm:p-8">
+          <div id="product-skeleton" class="space-y-4">
+            <div class="skeleton h-8 w-2/3 rounded-lg"></div>
+            <div class="skeleton h-5 w-1/3 rounded-lg"></div>
+            <div class="skeleton h-20 w-full rounded-lg"></div>
+          </div>
+          <div id="product-header" class="hidden fade-up">
+            <div class="flex items-start gap-4">
+              <span id="product-icon" class="grid h-14 w-14 shrink-0 place-items-center rounded-2xl text-white shadow-lg"></span>
+              <div class="min-w-0">
+                <p id="product-network" class="text-[11px] font-bold uppercase tracking-[0.3em] text-pink-300/90"></p>
+                <h1 id="product-title" class="font-display mt-1 text-3xl leading-tight font-medium tracking-tight text-white sm:text-5xl"></h1>
+                <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+                  <span class="tracking-tight text-amber-400" aria-label="Avaliação 5 de 5">★★★★★</span>
+                  <span id="price-from-row" class="flex items-center gap-1.5 text-xs font-bold text-slate-400">
+                    DE <s id="price-from"></s>
+                    <span id="price-discount" class="rounded-md bg-emerald-500 px-1.5 py-0.5 text-[11px] font-extrabold text-white"></span>
+                  </span>
+                  <span class="font-bold text-slate-500">POR <span id="price-to" class="text-gradient-ig text-xl font-extrabold"></span></span>
+                </div>
+              </div>
+            </div>
+            <div id="product-description" class="mt-6 space-y-3 leading-relaxed"></div>
+            <ul id="product-features" class="mt-5 hidden grid gap-2 sm:grid-cols-2"></ul>
+            <div id="product-examples" class="mt-6 hidden">
+              <p class="text-sm font-bold text-slate-700">Exemplos de comentários</p>
+              <ul id="product-examples-list" class="mt-3 flex flex-wrap gap-2"></ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Etapas -->
+        <ol id="steps" class="grid grid-cols-4 gap-2 text-center text-xs font-bold sm:text-sm" aria-label="Etapas da compra"></ol>
+
+        <!-- Compra -->
+        <section id="purchase-area" class="scroll-mt-24 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm sm:p-8">
+          <div class="flex items-center justify-between gap-3">
+            <h2 id="variant-title" class="text-lg font-extrabold text-slate-900"></h2>
+            <span id="variant-hint" class="hidden text-xs font-semibold text-slate-400 sm:block"></span>
+          </div>
+          <div id="variants" role="radiogroup" aria-labelledby="variant-title" class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4"></div>
+
+          <form id="checkout-form" class="mt-10 space-y-4" novalidate>
+            <h2 class="text-lg font-extrabold text-slate-900">Seus dados</h2>
+
+            <div>
+              <label for="link" id="link-label" class="mb-1.5 block text-sm font-bold text-slate-700">Link do perfil</label>
+              <div class="relative">
+                <span data-icon="link" class="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-slate-400"></span>
+                <input id="link" name="link" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="300" required
+                  class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-3.5 pr-4 pl-12 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100 aria-[invalid=true]:border-red-300 aria-[invalid=true]:ring-red-50">
+              </div>
+              <p id="link-help" class="mt-1.5 text-xs text-slate-400"></p>
+              <p data-error-for="link" class="mt-1.5 hidden text-sm font-medium text-red-500"></p>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label for="whatsapp" class="mb-1.5 block text-sm font-bold text-slate-700">WhatsApp</label>
+                <div class="relative">
+                  <span data-icon="phone" class="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-slate-400"></span>
+                  <input id="whatsapp" name="whatsapp" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="(11) 99999-9999" maxlength="16" required
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-3.5 pr-4 pl-12 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100 aria-[invalid=true]:border-red-300 aria-[invalid=true]:ring-red-50">
+                </div>
+                <p data-error-for="whatsapp" class="mt-1.5 hidden text-sm font-medium text-red-500"></p>
+              </div>
+              <div>
+                <label for="email" class="mb-1.5 block text-sm font-bold text-slate-700">E-mail para o comprovante</label>
+                <div class="relative">
+                  <span data-icon="mail" class="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-slate-400"></span>
+                  <input id="email" name="email" type="email" autocomplete="email" placeholder="voce@email.com" maxlength="254" required
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-3.5 pr-4 pl-12 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100 aria-[invalid=true]:border-red-300 aria-[invalid=true]:ring-red-50">
+                </div>
+                <p data-error-for="email" class="mt-1.5 hidden text-sm font-medium text-red-500"></p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3 rounded-2xl border border-amber-200/70 bg-amber-50 p-4 text-sm text-amber-900">
+              <span data-icon="lock" class="mt-0.5 h-5 w-5 shrink-0 text-amber-500"></span>
+              <p><strong>Nunca pedimos sua senha.</strong> Mantenha o perfil <strong>público</strong> até o fim da entrega.</p>
+            </div>
+
+            <p id="form-error" role="alert" class="hidden rounded-2xl bg-red-50 p-4 text-sm font-medium text-red-600"></p>
+
+            <button type="submit" data-submit class="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-600 via-pink-500 to-orange-400 py-4 text-base font-extrabold text-white shadow-lg shadow-fuchsia-950/50 transition hover:-translate-y-0.5 hover:shadow-xl disabled:translate-y-0 disabled:cursor-wait disabled:opacity-70 lg:hidden">
+              <span data-submit-label>Comprar agora</span>
+            </button>
+          </form>
+        </section>
+
+        <!-- PIX -->
+        <section id="pix-area" class="scroll-mt-24 hidden rounded-3xl border border-slate-100 bg-white p-6 shadow-sm fade-up sm:p-8">
+          <div class="grid items-center gap-8 md:grid-cols-[auto_1fr]">
+            <div class="mx-auto text-center">
+              <div class="rounded-3xl border border-slate-100 p-3 shadow-sm">
+                <img id="pix-qr" alt="QR Code do pagamento PIX" width="220" height="220" class="h-56 w-56 rounded-2xl">
+              </div>
+              <p class="mt-3 flex items-center justify-center gap-1.5 text-sm font-semibold text-slate-500">
+                <span data-icon="clock" class="h-4 w-4"></span> Expira em <span id="pix-countdown" class="font-extrabold text-slate-800 tabular-nums">--:--</span>
+              </p>
+              <div class="mx-auto mt-2 h-1.5 w-56 overflow-hidden rounded-full bg-slate-100">
+                <div id="pix-progress" class="h-full rounded-full bg-gradient-to-r from-fuchsia-500 to-orange-400 transition-[width] duration-1000"></div>
+              </div>
+            </div>
+            <div>
+              <span class="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">
+                <span class="relative flex h-2 w-2"><span class="absolute h-full w-full animate-ping rounded-full bg-amber-400 opacity-75"></span><span class="relative h-2 w-2 rounded-full bg-amber-500"></span></span>
+                Aguardando pagamento
+              </span>
+              <h2 class="mt-3 text-2xl font-extrabold text-slate-900">Pague <span id="pix-amount" class="text-emerald-500"></span> com PIX</h2>
+              <ol class="mt-4 space-y-2 text-sm">
+                <li class="flex gap-3"><span class="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-indigo-50 text-xs font-extrabold text-indigo-600">1</span><span>Abra o app do seu banco e escolha <strong class="text-slate-700">PIX</strong>.</span></li>
+                <li class="flex gap-3"><span class="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-indigo-50 text-xs font-extrabold text-indigo-600">2</span><span>Escaneie o QR Code ou use o <strong class="text-slate-700">Copia e Cola</strong>.</span></li>
+                <li class="flex gap-3"><span class="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-indigo-50 text-xs font-extrabold text-indigo-600">3</span><span>Pronto! Esta tela atualiza sozinha quando o pagamento for aprovado.</span></li>
+              </ol>
+              <div class="mt-5 flex overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+                <input id="pix-code" readonly aria-label="Código PIX copia e cola" class="min-w-0 flex-1 bg-transparent px-4 py-3 font-mono text-xs text-slate-500 outline-none">
+                <button id="copy-btn" type="button" class="flex shrink-0 items-center gap-1.5 bg-indigo-600 px-4 text-sm font-bold text-white transition hover:bg-indigo-700">
+                  <span data-icon="copy" class="h-4 w-4"></span><span id="copy-label">Copiar</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sucesso -->
+        <section id="success-area" class="scroll-mt-24 hidden rounded-3xl border border-emerald-100 bg-white p-8 text-center shadow-sm fade-up sm:p-12">
+          <div class="mx-auto grid h-20 w-20 place-items-center rounded-full bg-emerald-50 ring-8 ring-emerald-50/50">
+            <span data-icon="check" class="h-10 w-10 text-emerald-500"></span>
+          </div>
+          <h2 class="mt-6 text-2xl font-extrabold text-slate-900">Pagamento confirmado!</h2>
+          <p class="mx-auto mt-2 max-w-md">Seu pedido já foi enviado para processamento e a entrega começa em instantes. Guarde o código abaixo para acompanhar.</p>
+          <div class="mx-auto mt-6 inline-flex items-center gap-2 rounded-2xl bg-slate-50 px-4 py-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Pedido</span>
+            <code id="success-order-id" class="text-sm font-bold text-slate-700"></code>
+          </div>
+          <div class="mt-8 flex flex-wrap justify-center gap-3">
+            <a id="success-track-link" href="#/pedido" class="rounded-2xl bg-slate-900 px-6 py-3 text-sm font-bold text-white transition hover:bg-slate-700">Acompanhar pedido</a>
+            <a href="#/" class="rounded-2xl border border-slate-200 px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50">Ver outros serviços</a>
+          </div>
+        </section>
+
+        <!-- Expirado -->
+        <section id="expired-area" class="scroll-mt-24 hidden rounded-3xl border border-slate-100 bg-white p-8 text-center shadow-sm fade-up sm:p-12">
+          <div class="mx-auto grid h-16 w-16 place-items-center rounded-full bg-amber-50"><span data-icon="clock" class="h-8 w-8 text-amber-500"></span></div>
+          <h2 class="mt-5 text-xl font-extrabold text-slate-900">O PIX expirou</h2>
+          <p class="mt-2">O tempo para pagamento terminou. Gere um novo código para continuar — seus dados continuam preenchidos.</p>
+          <button type="button" id="retry-btn" class="mt-6 rounded-2xl bg-indigo-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-indigo-700">Gerar novo PIX</button>
+        </section>
+      </div>
+
+      <!-- Resumo -->
+      <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
+        <section class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+          <h2 class="text-sm font-bold uppercase tracking-widest text-slate-400">Resumo do pedido</h2>
+          <div class="mt-4 flex items-center gap-3">
+            <span id="summary-icon" class="grid h-11 w-11 shrink-0 place-items-center rounded-xl text-white"></span>
+            <div class="min-w-0">
+              <p id="summary-product" class="truncate font-bold text-slate-900">—</p>
+              <p id="summary-variant" class="text-sm text-slate-500">Selecione uma opção</p>
+            </div>
+          </div>
+          <dl class="mt-5 space-y-2 border-t border-dashed border-slate-200 pt-5 text-sm">
+            <div id="summary-from-row" class="flex justify-between"><dt>Preço original</dt><dd><s id="summary-from"></s></dd></div>
+            <div id="summary-savings-row" class="flex justify-between text-emerald-600"><dt>Desconto</dt><dd id="summary-savings" class="font-bold"></dd></div>
+            <div class="flex items-baseline justify-between pt-2"><dt class="font-bold text-slate-900">Total</dt><dd id="summary-total" class="text-2xl font-extrabold text-slate-900">—</dd></div>
+          </dl>
+          <button type="submit" form="checkout-form" data-submit class="mt-5 hidden w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-600 via-pink-500 to-orange-400 py-4 text-base font-extrabold text-white shadow-lg shadow-fuchsia-950/50 transition hover:-translate-y-0.5 hover:shadow-xl disabled:translate-y-0 disabled:cursor-wait disabled:opacity-70 lg:flex">
+            <span data-submit-label>Comprar agora</span>
+          </button>
+          <p id="summary-status" class="mt-5 hidden rounded-2xl bg-slate-50 p-3 text-center text-sm font-semibold"></p>
+          <div class="mt-4 flex items-center justify-center gap-4 text-xs font-semibold text-slate-400">
+            <span class="flex items-center gap-1"><span data-icon="lock" class="h-3.5 w-3.5"></span>Pagamento seguro</span>
+            <span class="flex items-center gap-1"><span data-icon="qr" class="h-3.5 w-3.5"></span>PIX</span>
+          </div>
+        </section>
+
+        <section class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+          <h2 class="text-sm font-bold uppercase tracking-widest text-slate-400">Por que comprar aqui</h2>
+          <ul id="info-list" class="mt-5 space-y-5"></ul>
+        </section>
+      </aside>
+    </div>
+
+    <!-- Barra fixa no celular -->
+    <div id="mobile-bar" class="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/95 p-3 backdrop-blur lg:hidden">
+      <div class="mx-auto flex max-w-6xl items-center gap-3">
+        <div class="min-w-0 flex-1">
+          <p id="mobile-variant" class="truncate text-xs font-semibold text-slate-400"></p>
+          <p id="mobile-total" class="text-xl font-extrabold text-slate-900"></p>
+        </div>
+        <button type="submit" form="checkout-form" data-submit class="rounded-2xl bg-gradient-to-r from-fuchsia-600 via-pink-500 to-orange-400 px-6 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-fuchsia-950/50 disabled:opacity-70">
+          <span data-submit-label>Comprar agora</span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============ ACOMPANHAR PEDIDO ============ -->
+  <main id="view-order" class="theme-dark relative hidden overflow-hidden py-16">
+    <div aria-hidden="true" class="pointer-events-none absolute -top-48 left-1/2 h-[480px] w-[900px] -translate-x-1/2 rounded-full bg-fuchsia-700/20 blur-[130px]"></div>
+    <div class="relative mx-auto max-w-2xl px-4">
+      <div class="text-center">
+        <span class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-indigo-50 text-indigo-600"><span data-icon="search" class="h-7 w-7"></span></span>
+        <h1 class="font-display mt-5 text-4xl font-medium tracking-tight text-white sm:text-5xl">Acompanhar <em class="text-gradient-ig -mr-[0.1em] pr-[0.1em]">pedido</em></h1>
+        <p class="mt-2">Digite o código do pedido que aparece após o pagamento.</p>
+      </div>
+      <form id="track-form" class="panel mt-8 flex gap-2 rounded-2xl p-2" novalidate>
+        <label for="track-input" class="sr-only">Código do pedido</label>
+        <input id="track-input" type="text" autocomplete="off" spellcheck="false" maxlength="36" placeholder="ex.: 4d240bc9-dcce-480a-98ac-f8441ccf0a2f"
+          class="min-w-0 flex-1 rounded-xl px-3 font-mono text-sm outline-none">
+        <button type="submit" class="rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-indigo-700">Consultar</button>
+      </form>
+      <p id="track-error" role="alert" class="mt-3 hidden text-center text-sm font-medium text-red-500"></p>
+      <section id="track-result" class="mt-8 hidden rounded-3xl border border-slate-100 bg-white p-6 shadow-sm fade-up sm:p-8"></section>
+    </div>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="relative overflow-hidden border-t border-white/[0.06] bg-[#07050b] text-white/55">
+    <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-pink-400/60 to-transparent"></div>
+    <div aria-hidden="true" class="pointer-events-none absolute -top-40 left-1/2 h-80 w-[720px] -translate-x-1/2 rounded-full bg-fuchsia-800/15 blur-[120px]"></div>
+
+    <div class="relative mx-auto grid max-w-6xl grid-cols-2 gap-x-6 gap-y-12 px-4 pt-20 pb-12 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
+      <div class="col-span-2 lg:col-span-1">
+        <a href="#/" class="font-display text-4xl font-medium tracking-tight text-white">Impulso <em class="text-gradient-ig -mr-[0.1em] pr-[0.1em]">Social</em></a>
+        <p class="mt-4 max-w-xs text-sm leading-relaxed">Engajamento para Instagram e TikTok com pagamento via PIX e entrega automática. Nunca solicitamos senhas.</p>
+        <ul class="mt-6 flex flex-wrap gap-2 text-xs font-bold text-white/75">
+          <li class="flex items-center gap-1.5 rounded-full bg-white/[0.05] px-3 py-1.5 ring-1 ring-white/10"><span data-icon="qr" class="h-3.5 w-3.5 text-teal-300"></span>PIX</li>
+          <li class="flex items-center gap-1.5 rounded-full bg-white/[0.05] px-3 py-1.5 ring-1 ring-white/10"><span data-icon="lock" class="h-3.5 w-3.5 text-pink-300"></span>Sem senha</li>
+          <li class="flex items-center gap-1.5 rounded-full bg-white/[0.05] px-3 py-1.5 ring-1 ring-white/10"><span data-icon="bolt" class="h-3.5 w-3.5 text-amber-300"></span>Entrega 24h</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-white"><span data-icon="instagram" class="h-4 w-4 text-pink-300"></span>Instagram</h3>
+        <ul id="footer-instagram" class="mt-5 space-y-3 text-sm"></ul>
+      </div>
+      <div>
+        <h3 class="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-white"><span data-icon="tiktok" class="h-4 w-4 text-white"></span>TikTok</h3>
+        <ul id="footer-tiktok" class="mt-5 space-y-3 text-sm"></ul>
+      </div>
+      <div>
+        <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-white">Ajuda</h3>
+        <ul class="mt-5 space-y-3 text-sm">
+          <li><a href="#/pedido" class="footer-link">Acompanhar pedido</a></li>
+          <li><button type="button" data-goto="servicos" class="footer-link">Todos os serviços</button></li>
+          <li><button type="button" data-goto="como-funciona" class="footer-link">Como funciona</button></li>
+          <li><button type="button" data-goto="faq" class="footer-link">Dúvidas frequentes</button></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="relative mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 border-t border-white/[0.06] px-4 py-6 text-xs text-white/35 sm:flex-row">
+      <p>&copy; <span id="year"></span> Impulso Social. Não somos afiliados ao Instagram, TikTok ou Meta.</p>
+      <button type="button" id="back-to-top" class="group flex items-center gap-2 font-bold text-white/60 transition hover:text-white">
+        Voltar ao topo
+        <span class="grid h-9 w-9 place-items-center rounded-full bg-white/[0.06] ring-1 ring-white/10 transition group-hover:-translate-y-1 group-hover:bg-gradient-to-br group-hover:from-fuchsia-600 group-hover:to-orange-400 group-hover:ring-transparent">
+          <span data-icon="arrow" class="h-4 w-4 -rotate-90"></span>
+        </span>
+      </button>
+    </div>
+
+    <p aria-hidden="true" class="footer-giant font-display pointer-events-none -mb-[0.22em] text-center leading-none font-semibold whitespace-nowrap select-none">IMPULSO SOCIAL</p>
+  </footer>
+
+  <div id="profile-modal" class="fixed inset-0 z-[60] hidden items-end justify-center p-3 sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+    <div data-modal-close class="modal-backdrop absolute inset-0 bg-black/75 backdrop-blur-sm"></div>
+    <div class="modal-card relative w-full max-w-sm overflow-hidden rounded-3xl border border-white/10 bg-[#120d19] text-white shadow-2xl shadow-fuchsia-950/40">
+      <div aria-hidden="true" class="pointer-events-none absolute -top-24 left-1/2 h-48 w-72 -translate-x-1/2 rounded-full bg-fuchsia-600/25 blur-3xl"></div>
+      <button type="button" data-modal-close aria-label="Fechar" class="absolute top-3 right-3 z-10 grid h-9 w-9 place-items-center rounded-full text-white/50 transition hover:bg-white/10 hover:text-white">
+        <span data-icon="x" class="h-5 w-5"></span>
+      </button>
+      <div id="profile-modal-body" class="relative p-6"></div>
+    </div>
+  </div>
+
+  <div id="toasts" aria-live="polite" class="pointer-events-none fixed top-20 right-4 left-4 z-50 flex flex-col items-center gap-2 sm:left-auto sm:items-end"></div>
+</body>
+</html>

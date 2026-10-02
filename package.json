@@ -1,0 +1,31 @@
+{
+  "name": "smm-revenda",
+  "version": "1.0.0",
+  "description": "Plataforma de revenda automatizada de engajamento (SMM) com PIX e despacho via API",
+  "type": "module",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "db:init": "node scripts/db-init.js",
+    "smm:check": "node scripts/smm-check.js",
+    "db:local": "pglite-server --db=./.pgdata --port=5544 --max-connections=20"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "pg": "^8.13.1",
+    "qrcode": "^1.5.4",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@electric-sql/pglite-socket": "^0.2.11"
+  }
+}
