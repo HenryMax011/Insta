@@ -21,7 +21,7 @@ const STATUS = {
 };
 const TABS = ['todos', 'erro_automacao', 'pago', 'enviado', 'concluido', 'parcial', 'aguardando_pagamento', 'cancelado'];
 
-const state = { filter: 'todos', search: '', offset: 0, orders: [], counts: {}, timer: null, searchTimer: null };
+const state = { filter: 'todos', search: '', offset: 0, orders: [], subscriptions: [], counts: {}, timer: null, searchTimer: null };
 
 function el(tag, className, text) {
   const node = document.createElement(tag);
@@ -52,7 +52,7 @@ async function api(path, options = {}) {
     throw new Error('Não autorizado');
   }
   if (!res.ok) {
-    const err = new Error(data.error || data.reason || `Erro HTTP ${res.status}`);
+    const err = new Error(data.error || data.reason || data.message || `Erro HTTP ${res.status}`);
     err.data = data;
     throw err;
   }
@@ -160,6 +160,75 @@ function renderSummary(summary) {
 
   renderTabs();
 }
+
+// ==================== ASSINATURAS MENSAIS ====================
+
+async function loadSubscriptions() {
+  try {
+    const data = await api('/subscriptions');
+    state.subscriptions = data.subscriptions || [];
+    renderSubscriptions();
+  } catch (err) {
+    console.error('Erro ao carregar assinaturas:', err);
+  }
+}
+
+function renderSubscriptions() {
+  const tbody = $('#subscriptions-list');
+  if (!tbody) return;
+
+  if (!state.subscriptions.length) {
+    tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-white/40">Nenhuma assinatura cadastrada.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = state.subscriptions.map(sub => {
+    const statusClasses = {
+      active: 'text-emerald-400 bg-emerald-500/10',
+      past_due: 'text-amber-400 bg-amber-500/10',
+      canceled: 'text-red-400 bg-red-500/10'
+    }[sub.status] || 'text-white/60 bg-white/5';
+
+    return `
+      <tr class="transition hover:bg-white/[0.01]">
+        <td class="p-4 font-medium">${sub.user_email}<br><span class="text-xs text-white/40">${sub.user_whatsapp || 'Sem WhatsApp'}</span></td>
+        <td class="p-4"><p class="font-bold">${sub.plan_name}</p><a href="${sub.target_link}" target="_blank" class="text-xs text-pink-400 hover:underline truncate block max-w-[200px]">${sub.target_link}</a></td>
+        <td class="p-4 tabular-nums">${money(sub.amount_cents)}</td>
+        <td class="p-4"><span class="rounded-full px-2.5 py-1 text-xs font-bold uppercase ${statusClasses}">${sub.status}</span></td>
+        <td class="p-4 tabular-nums text-xs text-white/70">${new Date(sub.next_billing_date).toLocaleDateString('pt-BR')}</td>
+        <td class="p-4 text-right space-x-2">
+          <button onclick="notifyPastDue('${sub.id}')" class="rounded-lg bg-amber-500/20 px-2.5 py-1.5 text-xs font-semibold text-amber-300 hover:bg-amber-500/30 transition">Cobrar Email</button>
+          <button onclick="cancelSubscription('${sub.id}')" class="rounded-lg bg-red-500/20 px-2.5 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/30 transition">Cancelar</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+window.notifyPastDue = async function(id) {
+  if (!confirm('Deseja enviar um e-mail de cobrança para este cliente?')) return;
+  try {
+    await api(`/subscriptions/${id}/notify-past-due`, { method: 'POST' });
+    toast('E-mail de cobrança enviado com sucesso!', 'success');
+    loadSubscriptions();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+};
+
+window.cancelSubscription = async function(id) {
+  if (!confirm('Deseja realmente cancelar esta assinatura?')) return;
+  try {
+    await api(`/subscriptions/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'canceled' })
+    });
+    toast('Assinatura cancelada com sucesso.', 'success');
+    loadSubscriptions();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+};
 
 // ==================== PEDIDOS ====================
 
@@ -287,7 +356,7 @@ async function refreshAll({ silent = false } = {}) {
   const button = $('#refresh');
   button.disabled = true;
   try {
-    const [summary] = await Promise.all([api('/summary'), loadOrders()]);
+    const [summary] = await Promise.all([api('/summary'), loadOrders(), loadSubscriptions()]);
     renderSummary(summary);
     $('#updated-at').textContent = `Atualizado às ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
   } catch (err) {

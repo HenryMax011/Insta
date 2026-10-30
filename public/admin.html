@@ -54,15 +54,47 @@
 
       <section id="stats" class="grid grid-cols-2 gap-3 lg:grid-cols-4"></section>
 
-      <section class="card mt-4 flex flex-col gap-3 rounded-2xl p-4 sm:flex-row sm:items-center sm:justify-between">
+      <!-- Alertas e Saldo SMM -->
+      <section class="card mt-4 flex flex-col gap-4 rounded-2xl p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p class="text-sm font-bold">Alertas no celular</p>
-          <p id="alert-status" class="mt-0.5 text-xs text-white/50"></p>
+          <p class="text-sm font-bold">Alertas no celular / SMM</p>
+          <p id="alert-status" class="mt-0.5 text-xs text-white/50">A verificar saldo do fornecedor...</p>
         </div>
-        <button id="test-alert" type="button" class="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-sm font-semibold text-white/80 transition hover:bg-white/10">Enviar alerta de teste</button>
+        <div class="flex gap-2">
+          <button id="test-alert" type="button" class="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-sm font-semibold text-white/80 transition hover:bg-white/10">Enviar alerta de teste</button>
+        </div>
       </section>
 
+      <!-- SEÇÃO DE ASSINATURAS MENSAIS -->
       <section class="mt-8">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <h2 class="text-xl font-extrabold">Assinaturas Mensais</h2>
+          <div class="text-xs text-white/50">Gerencie recorências e status de pagamento</div>
+        </div>
+        
+        <div class="card mt-4 overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.02]">
+          <table class="w-full text-left text-sm">
+            <thead class="border-b border-white/10 bg-white/[0.04] text-xs uppercase text-white/60">
+              <tr>
+                <th class="p-4">Cliente</th>
+                <th class="p-4">Plano / Link</th>
+                <th class="p-4">Valor</th>
+                <th class="p-4">Status</th>
+                <th class="p-4">Vencimento</th>
+                <th class="p-4 text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="subscriptions-list" class="divide-y divide-white/5">
+              <tr>
+                <td colspan="6" class="p-4 text-center text-white/40">A carregar assinaturas...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Pedidos Avulsos -->
+      <section class="mt-12">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <h1 class="text-xl font-extrabold">Pedidos</h1>
           <input id="search" type="search" placeholder="Buscar por e-mail, link, WhatsApp ou código"

@@ -1,6 +1,9 @@
 import 'dotenv/config';
 import { z } from 'zod';
 
+console.log("=== VALOR DE DATABASE_URL ===", process.env.DATABASE_URL ?? 'Não definido');
+
+
 export const isServerless = Boolean(process.env.VERCEL);
 
 const bool = z.enum(['true', 'false']).default('false').transform((v) => v === 'true');

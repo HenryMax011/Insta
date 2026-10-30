@@ -8,7 +8,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev": "node --watch src/server.js",
+    "dev": "node --env-file=.env --watch src/server.js",
     "start": "node src/server.js",
     "db:init": "node scripts/db-init.js",
     "smm:check": "node scripts/smm-check.js",
@@ -20,6 +20,7 @@
     "express": "^5.1.0",
     "express-rate-limit": "^7.5.0",
     "helmet": "^8.0.0",
+    "nodemailer": "^10.3.1",
     "pg": "^8.13.1",
     "qrcode": "^1.5.4",
     "zod": "^3.24.1"

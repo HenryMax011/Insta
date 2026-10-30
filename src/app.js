@@ -9,9 +9,17 @@ import { publicRouter } from './routes/public.js';
 import { webhooksRouter } from './routes/webhooks.js';
 import { adminRouter } from './routes/admin.js';
 import { cronRouter } from './routes/cron.js';
+import path from 'path';
 
 export function createApp() {
   const app = express();
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
+  // Rota para abrir o Painel Admin
+  app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/admin.html'));
+  });
 
   app.disable('x-powered-by');
   app.set('trust proxy', env.TRUST_PROXY);

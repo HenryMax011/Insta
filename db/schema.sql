@@ -301,3 +301,27 @@ ALTER TABLE orders         ENABLE ROW LEVEL SECURITY;
 ALTER TABLE payments       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE payment_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE alert_cooldowns ENABLE ROW LEVEL SECURITY;
+
+
+-- ============================================================
+-- Assinaturas Mensais
+-- ============================================================
+CREATE TABLE IF NOT EXISTS subscriptions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_email VARCHAR(255) NOT NULL,
+  user_whatsapp VARCHAR(50),
+  target_link VARCHAR(500) NOT NULL,
+  plan_name VARCHAR(100) NOT NULL,
+  smm_service_id INT NOT NULL,
+  amount_cents INT NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'past_due', 'canceled')),
+  next_billing_date TIMESTAMPTZ NOT NULL,
+  last_payment_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Suporte a assinaturas na tabela de pedidos
+ALTER TABLE orders 
+ADD COLUMN IF NOT EXISTS subscription_id UUID REFERENCES subscriptions(id),
+ADD COLUMN IF NOT EXISTS smm_balance_at_dispatch NUMERIC(10, 2);

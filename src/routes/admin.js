@@ -10,6 +10,7 @@ import { AppError } from '../utils/errors.js';
 import { env } from '../config/env.js';
 import { checkBalance } from '../services/balanceMonitor.js';
 import { alertChannels, sendAlert } from '../services/alerts.js';
+import { enviarEmailCobranca } from '../services/emailService.js';
 
 export const adminRouter = Router();
 
@@ -95,3 +96,85 @@ adminRouter.get(
 );
 
 adminRouter.get('/smm/catalog-check', fromProvider(() => verificarCatalogo()));
+
+// =============================================================
+// NOVAS ROTAS: GESTÃO DE ASSINATURAS E MONITORAMENTO DE SALDO
+// =============================================================
+
+adminRouter.get('/smm/status-check', async (req, res) => {
+  const saldoSMM = await consultarSaldoSMM();
+  const { rows: pendingOrders } = await query(
+    `SELECT id, amount_cents, service_name, quantity, status, provider_error 
+       FROM orders 
+      WHERE status IN ('pago', 'erro_automacao') 
+      ORDER BY created_at DESC`
+  );
+
+  res.json({
+    smmBalance: saldoSMM,
+    hasLowBalance: Number(saldoSMM.balance) < 10.00,
+    pendingOrdersCount: pendingOrders.length,
+    pendingOrders
+  });
+});
+
+adminRouter.get('/subscriptions', async (req, res) => {
+  const { status } = req.query;
+  const { rows } = await query(
+    `SELECT id, user_email, user_whatsapp, target_link, plan_name, 
+            amount_cents, status, next_billing_date, last_payment_at, created_at
+       FROM subscriptions
+      WHERE ($1::varchar IS NULL OR status = $1::varchar)
+      ORDER BY created_at DESC`,
+    [status ?? null]
+  );
+  res.json({ subscriptions: rows });
+});
+
+adminRouter.patch('/subscriptions/:id/status', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!['active', 'past_due', 'canceled'].includes(status)) {
+    throw new AppError(400, 'Status de assinatura inválido');
+  }
+
+  const { rows } = await query(
+    `UPDATE subscriptions 
+        SET status = $1, updated_at = NOW() 
+      WHERE id = $2 
+      RETURNING *`,
+    [status, id]
+  );
+
+  if (!rows[0]) throw new AppError(404, 'Assinatura não encontrada');
+  res.json({ ok: true, subscription: rows[0] });
+});
+
+adminRouter.post('/subscriptions/:id/notify-past-due', async (req, res) => {
+  const { id } = req.params;
+  const { rows } = await query(`SELECT * FROM subscriptions WHERE id = $1`, [id]);
+  if (!rows[0]) throw new AppError(404, 'Assinatura não encontrada');
+
+  const sub = rows[0];
+  await enviarEmailCobranca({
+    email: sub.user_email,
+    planName: sub.plan_name,
+    link: sub.target_link
+  });
+
+  await query(`UPDATE subscriptions SET status = 'past_due', updated_at = NOW() WHERE id = $1`, [id]);
+  res.json({ ok: true, message: 'E-mail de cobrança enviado com sucesso.' });
+});
+
+
+  // Rota de login para verificar se o ADMIN_TOKEN é válido
+adminRouter.post('/login', (req, res) => {
+  const { token } = req.body;
+
+  if (!token || token !== env.ADMIN_TOKEN) {
+    throw new AppError(401, 'Token de administrador inválido', 'INVALID_TOKEN');
+  }
+
+  res.json({ ok: true, message: 'Autenticado com sucesso' });
+});
